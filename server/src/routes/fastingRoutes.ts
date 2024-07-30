@@ -1,18 +1,28 @@
-import express from 'express';
+import { Router } from 'express';
 import FastingRecord from '../models/FastingRecord';
 
-const router = express.Router();
+const router = Router();
 
-// Example route to get all fasting records
+// Get all fasting records
 router.get('/', async (req, res) => {
   try {
     const records = await FastingRecord.find();
     res.json(records);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch fasting records' });
   }
 });
 
-// Add other routes as needed
+// Create a new fasting record
+router.post('/', async (req, res) => {
+  try {
+    const { start, end, userId } = req.body;
+    const record = new FastingRecord({ start, end, userId });
+    await record.save();
+    res.status(201).json(record);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create fasting record' });
+  }
+});
 
 export default router;
